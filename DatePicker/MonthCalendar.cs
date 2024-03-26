@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DatePickerPro
@@ -14,8 +10,6 @@ namespace DatePickerPro
 
     internal partial class MonthCalendar : UserControl
     {
-        //private readonly int _buttonWidth = 15;
-        //private readonly int _buttonHeight = 10;
         private readonly int _headerHeight = 20;
         private readonly Color _headerBackColor = SystemColors.ButtonFace;
 
@@ -27,7 +21,6 @@ namespace DatePickerPro
 
         private List<Holiday> _holidaysList;
         private DayButton[,] _toggleButtons;
-        private ToolTip _ttError = new ToolTip() { ShowAlways = true, ToolTipIcon = ToolTipIcon.Error, BackColor = Color.LightPink };
         public MonthCalendar()
         {
             InitializeComponent();
@@ -55,12 +48,12 @@ namespace DatePickerPro
 
         private void SetDateToCalendar(DateTime value)
         {
-            if (value == new DateTime()) return;
+             if (value == new DateTime()) return;
             _monthYearSelector.Value = value;
             for (int i = 0; i < 5; i++)
             {
                 var button = _toggleButtons[i, (int)value.DayOfWeek];
-                if ((DateTime)button.Tag == value)
+                if (button.Date == value)
                 {
                     button.Checked = true;
                     break;
@@ -79,9 +72,9 @@ namespace DatePickerPro
             _middlePanel.Dock = DockStyle.Fill;
             _middlePanel.BackColor = SystemColors.Control;
 
-            _monthYearSelector = new MonthYearSelector() {  Left = 0, Top = 0 };
-           // _monthYearSelector.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
+            _monthYearSelector = new MonthYearSelector() { Left = 0, Top = 0 };
             _monthYearSelector.ValueChanged += (sender, e) => UpdateCalendar();
+            _topPanel.Controls.Add(_monthYearSelector);
 
             _calendarTable = new TableLayoutPanel();
             _calendarTable.RowStyles.Add(new RowStyle(SizeType.Absolute, _headerHeight));
@@ -91,22 +84,14 @@ namespace DatePickerPro
             {
                 _calendarTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / 7));
             }
-            _topPanel.Controls.Add(_monthYearSelector);
+
             _middlePanel.Controls.Add(_calendarTable);
 
             Controls.Add(_topPanel);
             Controls.Add(_middlePanel);
-         
-            _holidaysList = new List<Holiday>();
-            _toggleButtons = new DayButton[6, 7];
 
-            for (int i = 0; i < 6; i++)
-            {
-                for (int j = 0; j < 7; j++)
-                {
-                    _toggleButtons[i, j] = GetDayButton();
-                }
-            }
+            _holidaysList = new List<Holiday>();
+            PopulateCalendar();
 
             // Sample holidays (you can set these through the Holidays property)
             Holidays = new List<Holiday>
@@ -135,12 +120,23 @@ namespace DatePickerPro
             InitCalendar();
         }
 
+        private void PopulateCalendar()
+        {
+            _toggleButtons = new DayButton[6, 7];
+
+            for (int i = 0; i < 6; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    _toggleButtons[i, j] = GetDayButton();
+                }
+            }
+        }
+
         private void SetDefaults()
         {
             MinimumSize = new Size(300, 180);
-
             Value = DateTime.Now;
-          
         }
 
         private void InitCalendar()
@@ -153,15 +149,7 @@ namespace DatePickerPro
 
             for (int i = 0; i < 7; i++)
             {
-                var dayButton = new DayButton
-                {
-                    Text = dayNames[i].Substring(0, 3),
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    BackColor = _headerBackColor,
-                    ForeColor = Color.White,
-                    Enabled = false
-                };
-                _calendarTable.Controls.Add(dayButton, i, 1);
+                _calendarTable.Controls.Add(GetDayHeader(dayNames, i), i, 1);
             }
             for (int row = 2; row <= 7; row++)
             {
@@ -172,6 +160,18 @@ namespace DatePickerPro
                     _calendarTable.Controls.Add(_toggleButtons[row - 2, col], col, row);
                 }
             }
+        }
+
+        private DayButton GetDayHeader(string[] dayNames, int i)
+        {
+            return new DayButton
+            {
+                Text = dayNames[i].Substring(0, 3),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = _headerBackColor,
+                ForeColor = Color.White,
+                Enabled = false
+            };
         }
 
         private void UpdateCalendar()
@@ -192,60 +192,37 @@ namespace DatePickerPro
 
                 for (int col = 0; col < 7; col++)
                 {
-                    if ((row - 2) * 7 + col < daysBefore)
-                    {
-                        var prevMonthDay = firstDayOfMonth.AddDays(-daysBefore + (row - 2) * 7 + col);
-                        DisplayToggleButton(row, col, prevMonthDay, false);
-                    }
-                    else if ((row - 2) * 7 + col - daysBefore < daysInMonth)
-                    {
-                        var currentMonthDay = firstDayOfMonth.AddDays((row - 2) * 7 + col - daysBefore);
-                        DisplayToggleButton(row, col, currentMonthDay, true);
-                    }
-                    else
-                    {
-                        var nextMonthDay = firstDayOfMonth.AddMonths(1).AddDays((row - 2) * 7 + col - daysBefore - daysInMonth);
-                        DisplayToggleButton(row, col, nextMonthDay, false);
-                    }
+                    DisplayButton(firstDayOfMonth, daysInMonth, daysBefore, row, col);
                 }
             }
         }
 
-        private void DisplayToggleButton(int row, int col, DateTime day, bool isCurrentMonth)
+        private void DisplayButton(DateTime firstDayOfMonth, int daysInMonth, int daysBefore, int row, int col)
         {
-            if (_toggleButtons[row - 2, col] == null) _toggleButtons[row - 2, col] = GetDayButton();
-
-            _toggleButtons[row - 2, col].Text = day.Day.ToString();
-
-            _toggleButtons[row - 2, col].Tag = day;
-
-            var holidays = GetHoliday(day);
-
-            var isWorkDay = day.DayOfWeek != DayOfWeek.Sunday && day.DayOfWeek != DayOfWeek.Saturday && holidays.Count == 0;
-
-            _toggleButtons[row - 2, col].ForeColor = isCurrentMonth ? SystemColors.WindowText : SystemColors.GrayText;
-            _toggleButtons[row - 2, col].Cursor = AllowSelectionOfHolidays ? Cursors.Default : isWorkDay ? Cursors.Default : Cursors.No;
-
-            _toggleButtons[row - 2, col].BackgroundImage = holidays.Count == 0 ? null : ImageHelper.GenerateBitmap(32, 32, holidays);
-            _toggleButtons[row - 2, col].FlatAppearance.MouseOverBackColor = isWorkDay ? SystemColors.GradientInactiveCaption : SystemColors.Control;
-
-            _toggleButtons[row - 2, col].BackColor = isWorkDay ? SystemColors.ButtonHighlight : SystemColors.ButtonFace;
-
-        }
-
-        private static string GetTooltipText(List<Holiday> holidays)
-        {
-            var toolTipText = string.Empty;
-
-            if (holidays.Count > 0)
+            var days = (row - 2) * 7 + col;
+            if (days < daysBefore)
             {
-                foreach (var holiday in holidays)
-                {
-                    toolTipText += $"{Environment.NewLine}{holiday.Description}-{holiday.Calendar.CalendarType}";
-                }
+                var prevMonthDay = firstDayOfMonth.AddDays(-daysBefore + days);
+                UpdateButton(row, col, prevMonthDay);
             }
+            else if (days - daysBefore < daysInMonth)
+            {
+                var currentMonthDay = firstDayOfMonth.AddDays(days - daysBefore);
+                UpdateButton(row, col, currentMonthDay, true);
+            }
+            else
+            {
+                var nextMonthDay = firstDayOfMonth.AddMonths(1).AddDays(days - daysBefore - daysInMonth);
+                UpdateButton(row, col, nextMonthDay);
+            }
+        }
 
-            return toolTipText;
+        private void UpdateButton(int row, int col, DateTime day, bool isCurrentMonth = false)
+        {
+            var button = _toggleButtons[row - 2, col];
+            if (button == null) button = GetDayButton();
+            var holidays = GetHoliday(day);
+            button.SetDate(day, day == _value, holidays, isCurrentMonth);
         }
 
         private List<Holiday> GetHoliday(DateTime day)
@@ -256,25 +233,17 @@ namespace DatePickerPro
         private DayButton GetDayButton()
         {
             var dayButton = new DayButton();
-            dayButton.Click += (sender, e) =>
+            dayButton.ValueChanged += (s, e) =>
             {
-                if (dayButton.Cursor == Cursors.No)
+                if (e == null)
                 {
-                    var day = (DateTime)dayButton.Tag;
-                    var holidaysText = GetTooltipText(GetHoliday(day));
-                    var toolTipText = $"'{day.ToString("dddd dd MMMM yyyy")}' is a non-working day.{holidaysText}";
-                    _ttError.Show(toolTipText, _monthYearSelector, 2000);
-                    _ttError.Show(toolTipText, _monthYearSelector, 2000);
-                    dayButton.Checked = false;
                     SetDateToCalendar(_value);
-                    return; 
-                };
-                _value = (DateTime)dayButton.Tag;
-                if (ValueChanged != null) ValueChanged(this, new ValueChangedEventArgs(Value));
+                    return;
+                }
+                if (ValueChanged != null) ValueChanged(this, e);
             };
             return dayButton;
         }
-
 
         public event EventHandler ValueChanged;
 
@@ -287,8 +256,6 @@ namespace DatePickerPro
                 UpdateCalendar();
             }
         }
-
-
     }
 
     public class ValueChangedEventArgs: EventArgs
@@ -298,8 +265,6 @@ namespace DatePickerPro
         public ValueChangedEventArgs( DateTime date)
         {
             Date = date;
-
         }
     }
-
 }
