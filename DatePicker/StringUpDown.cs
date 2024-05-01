@@ -62,6 +62,7 @@ namespace DatePickerPro
         {
             InitializeComponent();
             Months = DateTimeFormatInfo.CurrentInfo.MonthNames.SkipLast(1).ToArray();
+			nudMonthIndex.Value = 0;
             nudMonthIndex.Increment = 1;
             nudMonthIndex.Minimum = int.MinValue;
             nudMonthIndex.Maximum = int.MaxValue;
@@ -84,16 +85,6 @@ namespace DatePickerPro
             _value = months[(int)nudMonthIndex.Value];
             lblMonthName.Text = months[(int)nudMonthIndex.Value];
             if (ValueChanged != null) ValueChanged(this, new EventArgs());
-        }
-    }
-
-    public class ValueRolledEventArgs : EventArgs
-    {
-        public bool IsForword { get; set; }
-
-        public ValueRolledEventArgs(bool isForword)
-        {
-            IsForword = isForword;
         }
     }
 }
