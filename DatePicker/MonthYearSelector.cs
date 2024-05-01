@@ -25,15 +25,19 @@ namespace DatePickerPro
                 if (value == new DateTime()) return;
                 _value = value;
                 numericUpDown1.Value = value.Year;
-                stringUpDown1.Value = DateTimeFormatInfo.CurrentInfo.MonthNames.ToList()[value.Month - 1];
+                stringUpDown1.Value = _months[value.Month - 1];
             }
         }
+
+        private List<string> _months;
 
         public event EventHandler ValueChanged;
 
         public MonthYearSelector()
         {
             InitializeComponent();
+            _months = DateTimeFormatInfo.CurrentInfo.MonthNames.Take(12).ToList();
+            stringUpDown1.Months = _months.ToArray();
             numericUpDown1.Increment = 1;
             numericUpDown1.Minimum = 1900;
             numericUpDown1.Maximum = 9999;
@@ -45,7 +49,7 @@ namespace DatePickerPro
 
         private void Date_ValueChanged(object sender, EventArgs e)
         {
-            var monthIndex = DateTimeFormatInfo.CurrentInfo.MonthNames.ToList().IndexOf(stringUpDown1.Value);
+            var monthIndex = _months.IndexOf(stringUpDown1.Value);
             if (monthIndex < 0) return;
             _value = new DateTime((int)numericUpDown1.Value, monthIndex + 1, 1);
             if (ValueChanged != null) ValueChanged(this, new EventArgs());
