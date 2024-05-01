@@ -62,11 +62,11 @@ namespace DatePickerPro
             // 
             this.stringUpDown1.Location = new System.Drawing.Point(0, 0);
             this.stringUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.stringUpDown1.Months = new string[0];
+            this.stringUpDown1.Months = new string[] { "January" };
             this.stringUpDown1.Name = "stringUpDown1";
             this.stringUpDown1.Size = new System.Drawing.Size(90, 20);
             this.stringUpDown1.TabIndex = 0;
-            this.stringUpDown1.Value = "December";
+            this.stringUpDown1.Value = "January";
             this.stringUpDown1.ValueRolled += new System.EventHandler(this.stringUpDown1_ValueRolled);
             // 
             // MonthYearSelector
