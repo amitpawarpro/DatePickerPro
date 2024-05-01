@@ -82,6 +82,7 @@ namespace DatePickerPro
                 nudMonthIndex.Value = 0;
                 if (ValueRolled != null) ValueRolled(this, new ValueRolledEventArgs(true));
             }
+            if (months.Length == 0) return;
             _value = months[(int)nudMonthIndex.Value];
             lblMonthName.Text = months[(int)nudMonthIndex.Value];
             if (ValueChanged != null) ValueChanged(this, new EventArgs());
