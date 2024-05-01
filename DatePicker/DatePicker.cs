@@ -22,13 +22,8 @@ namespace DatePickerPro
         }
         public event EventHandler ValueChanged;
 
-        public bool AllowSelectionOfHolidays
-        {
-            get { return monthCalendarx1.AllowSelectionOfHolidays; }
-            set { monthCalendarx1.AllowSelectionOfHolidays = value; }
-        }
-
-
+        [EditorBrowsable()]
+        [Category("Behavior")]
         public DateTime Value
         {
             get { return monthCalendarx1.Value; }
@@ -37,12 +32,17 @@ namespace DatePickerPro
             }
         }
 
+        public List<Holiday> Holidays 
+        {
+            get { return monthCalendarx1.Holidays; }
+            set { monthCalendarx1.Holidays = value; }
+        }
 
 
         private void monthCalendarx1_DateChanged(object sender, EventArgs e)
         {
             if (isUpdating || this.DropState != eDropState.Dropped) return;
-            Value = ((ValueChangedEventArgs)e).Date;
+            Value = ((ValueChangedEventArgs)e).Value;
             this.CloseDropDown();
             if (ValueChanged != null) ValueChanged(this, e);
         }

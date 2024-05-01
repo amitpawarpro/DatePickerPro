@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 
 namespace DatePickerPro
 {
-    public class ImageHelper
+    public class IndicationHelper
     {
         private static void Render(Graphics g, float w, float h, List<Holiday> holidays)
         {

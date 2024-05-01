@@ -48,7 +48,7 @@ namespace DatePickerPro
             // 
             // monthCalendarx1
             // 
-            this.monthCalendarx1.AllowSelectionOfHolidays = false;
+            this.monthCalendarx1.BackColor = System.Drawing.SystemColors.Window;
             this.monthCalendarx1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.monthCalendarx1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.monthCalendarx1.Location = new System.Drawing.Point(0, 0);
@@ -62,7 +62,6 @@ namespace DatePickerPro
             // 
             // DatePicker
             // 
-            this.AnchorSize = new System.Drawing.Size(150, 21);
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);

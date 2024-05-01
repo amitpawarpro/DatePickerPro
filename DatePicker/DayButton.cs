@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace DatePickerPro
@@ -10,6 +11,8 @@ namespace DatePickerPro
         private readonly ToolTip _ttError = new() { ShowAlways = true, ToolTipIcon = ToolTipIcon.Error, BackColor = Color.LightPink };
         public DateTime Date { get; private set; }
         public List<Holiday> Holidays { get; private set; }
+
+        public event EventHandler MessageChanged;
         public DayButton()
         {
             Click += DayButton_Click;
@@ -18,11 +21,13 @@ namespace DatePickerPro
             Appearance = Appearance.Button;
             Dock = DockStyle.Fill;
             FlatStyle = FlatStyle.Flat;
-            FlatAppearance.BorderColor = Color.LightGray;
+            FlatAppearance.BorderSize = 0;
             FlatAppearance.CheckedBackColor = SystemColors.GradientActiveCaption;
-            FlatAppearance.MouseOverBackColor = SystemColors.GradientInactiveCaption;
             BackgroundImageLayout = ImageLayout.Stretch;
             Date = DateTime.Now;
+
+            MouseEnter += (s,e)=> { FlatAppearance.BorderSize = 1; if (MessageChanged != null){ MessageChanged(this, new MessageChangedEventArg(Date.ToString(Constants.DateDisplayFormatDetails) + GetTooltipText(Holidays))); } }; 
+            MouseLeave += (s, e) => { FlatAppearance.BorderSize = 0; if (MessageChanged != null){ MessageChanged(this, null); } };
         }
 
         private void DayButton_Click(object sender, EventArgs e)
@@ -30,8 +35,8 @@ namespace DatePickerPro
             if (Cursor == Cursors.No)
             {
                 var day = Date;
-                var holidaysText = GetTooltipText();
-                var toolTipText = $"'{day.ToString("dddd dd MMMM yyyy")}' is a non-working day.{holidaysText}";
+                var holidaysText = GetTooltipText(Holidays, Environment.NewLine);
+                var toolTipText = $"'{day.ToString(Constants.DateDisplayFormatDetails)}' is a non-working day.{holidaysText}";
                 _ttError.Show(toolTipText, this, 2000);
                 _ttError.Show(toolTipText, this, 2000);
                 Checked = false;
@@ -44,15 +49,15 @@ namespace DatePickerPro
 
         public event EventHandler ValueChanged;
 
-        private string GetTooltipText()
+        private string GetTooltipText(List<Holiday> holidays, string separator = ",")
         {
             var toolTipText = string.Empty;
 
-            if (Holidays.Count > 0)
+            if (holidays.Count > 0)
             {
-                foreach (var holiday in Holidays)
+                foreach (var holiday in holidays)
                 {
-                    toolTipText += $"{Environment.NewLine}{holiday.Description}-{holiday.Calendar.CalendarType}";
+                    toolTipText += $"{separator}{holiday.Description}-{holiday.Calendar.CalendarType}";
                 }
             }
 
@@ -61,20 +66,22 @@ namespace DatePickerPro
 
         public void SetDate(DateTime day, bool isSelected, List<Holiday> holidays, bool isCurrentMonth )
         {
-            if (Date == day) return;
-
             Date = day;
             Holidays = holidays;
             _ttError.RemoveAll();
             Checked = isSelected;
             Text = day.Day.ToString();
 
-            var isWorkDay = day.DayOfWeek != DayOfWeek.Sunday && day.DayOfWeek != DayOfWeek.Saturday && (holidays !=null && holidays.Count == 0);
+            var blockDayDueToHoliday = holidays.Any(h => h.Calendar.BlockDate);
+
+            var isWorkDay = day.DayOfWeek != DayOfWeek.Sunday && day.DayOfWeek != DayOfWeek.Saturday && !blockDayDueToHoliday;
 
             ForeColor = isCurrentMonth ? SystemColors.WindowText : SystemColors.GrayText;
             Cursor = isWorkDay ? Cursors.Default : Cursors.No;
 
-            BackgroundImage = (holidays != null && holidays.Count == 0) ? null : ImageHelper.GenerateBitmap(32, 32, holidays);
+            var holidaysToDisplay = holidays.FindAll(h => h.Calendar.DisplayOnDate);
+
+            BackgroundImage = (holidays != null && holidays.Count == 0) ? null : IndicationHelper.GenerateBitmap(32, 32, holidaysToDisplay);
             FlatAppearance.MouseOverBackColor = isWorkDay ? SystemColors.GradientInactiveCaption : SystemColors.Control;
 
             BackColor = isWorkDay ? SystemColors.ButtonHighlight : SystemColors.ButtonFace;

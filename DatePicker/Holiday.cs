@@ -28,10 +28,17 @@ namespace DatePickerPro
         public CalendarType CalendarType { get; set; }
         public Color Color { get; set; }
 
-        public Calendar( CalendarType calendarType, Color color)
+        public bool IsActive { get; set; }
+        public bool DisplayOnDate { get; set; }
+        public bool BlockDate { get; set; }
+
+        public Calendar( CalendarType calendarType, Color color, bool isActive, bool displayOnDate, bool blockDate)
         {
             Color = color;
             CalendarType = calendarType;
+            IsActive = isActive;
+            DisplayOnDate = displayOnDate;
+            BlockDate = blockDate;
         }
 
     }
