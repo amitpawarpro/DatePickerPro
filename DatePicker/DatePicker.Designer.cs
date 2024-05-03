@@ -29,7 +29,6 @@ namespace DatePickerPro
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DatePicker));
             this.panel1 = new System.Windows.Forms.Panel();
             this.monthCalendarx1 = new DatePickerPro.MonthCalendar();
             this.panel1.SuspendLayout();
@@ -40,10 +39,10 @@ namespace DatePickerPro
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.monthCalendarx1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(150, 150);
+            this.panel1.Size = new System.Drawing.Size(150, 200);
             this.panel1.TabIndex = 0;
             // 
             // monthCalendarx1
@@ -55,7 +54,7 @@ namespace DatePickerPro
             this.monthCalendarx1.MinimumSize = new System.Drawing.Size(300, 180);
             this.monthCalendarx1.Name = "monthCalendarx1";
             this.monthCalendarx1.Padding = new System.Windows.Forms.Padding(0, 0, 16, 0);
-            this.monthCalendarx1.Size = new System.Drawing.Size(300, 180);
+            this.monthCalendarx1.Size = new System.Drawing.Size(300, 198);
             this.monthCalendarx1.TabIndex = 0;
             this.monthCalendarx1.Value = new System.DateTime(((long)(0)));
             this.monthCalendarx1.ValueChanged += new System.EventHandler(this.monthCalendarx1_DateChanged);

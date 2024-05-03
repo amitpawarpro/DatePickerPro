@@ -37,7 +37,7 @@ namespace DatePickerPro
             // numericUpDown1
             // 
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.numericUpDown1.Location = new System.Drawing.Point(90, 2);
+            this.numericUpDown1.Location = new System.Drawing.Point(90, 0);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             9999,
             0,
@@ -60,11 +60,13 @@ namespace DatePickerPro
             // 
             // stringUpDown1
             // 
-            this.stringUpDown1.Location = new System.Drawing.Point(0, 0);
+            this.stringUpDown1.AutoSize = true;
+            this.stringUpDown1.Location = new System.Drawing.Point(0, -1);
             this.stringUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.stringUpDown1.Months = new string[] { "January" };
+            this.stringUpDown1.Months = new string[] {
+        "January"};
             this.stringUpDown1.Name = "stringUpDown1";
-            this.stringUpDown1.Size = new System.Drawing.Size(90, 20);
+            this.stringUpDown1.Size = new System.Drawing.Size(93, 21);
             this.stringUpDown1.TabIndex = 0;
             this.stringUpDown1.Value = "January";
             this.stringUpDown1.ValueRolled += new System.EventHandler(this.stringUpDown1_ValueRolled);
@@ -77,10 +79,12 @@ namespace DatePickerPro
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.stringUpDown1);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.MinimumSize = new System.Drawing.Size(140, 23);
             this.Name = "MonthYearSelector";
             this.Size = new System.Drawing.Size(140, 23);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

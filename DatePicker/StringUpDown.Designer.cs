@@ -55,7 +55,7 @@
             this.lblMonthName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMonthName.BackColor = System.Drawing.SystemColors.Window;
-            this.lblMonthName.Location = new System.Drawing.Point(16, 0);
+            this.lblMonthName.Location = new System.Drawing.Point(16, -2);
             this.lblMonthName.Name = "lblMonthName";
             this.lblMonthName.Size = new System.Drawing.Size(74, 18);
             this.lblMonthName.TabIndex = 1;

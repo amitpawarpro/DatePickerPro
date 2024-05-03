@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace DatePickerPro
 {
 
-    internal partial class MonthCalendar : UserControl
+    public partial class MonthCalendar : UserControl
     {
         private DayButton[,] _dayButtons;
         private List<Holiday> _holidaysList = new List<Holiday>();
@@ -25,7 +25,9 @@ namespace DatePickerPro
             }
         }
 
-        public List<Holiday> Holidays
+        
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+            public List<Holiday> Holidays
         {
             get { return _holidaysList; }
             set
@@ -50,7 +52,6 @@ namespace DatePickerPro
             }
             for (int row = 2; row <= 7; row++)
             {
-                _calendar.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / 6));
 
                 for (int col = 0; col < 7; col++)
                 {
@@ -92,7 +93,6 @@ namespace DatePickerPro
             int daysBefore = ((int)currentDay.DayOfWeek - (int)DayOfWeek.Sunday + 7) % 7; // Ensure positive value
             for (int row = 2; row <= 7; row++)
             {
-                _calendar.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / 6));
 
                 for (int col = 0; col < 7; col++)
                 {
